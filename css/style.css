@@ -276,8 +276,8 @@ ul {
 
 .fragment.melting {
   animation-name: fragment-melt;
-  animation-timing-function: ease-in;
-  animation-duration: 0.45s !important;
+  animation-timing-function: ease-out;
+  animation-duration: 0.3s !important;
   animation-delay: 0s !important;
 }
 
@@ -292,13 +292,12 @@ ul {
   100% { translate: calc(var(--drift) * 0.3) 120vh; opacity: 0.85; }
 }
 
-/* Melts like snow: shrinks straight down toward nothing (no growth
-   phase, default center transform-origin matching the fall animation)
-   while softening and fading, instead of bursting outward or jumping
-   to a different anchor point. */
+/* Melts like snow: stays full size and just fades away quickly, rather
+   than shrinking - a light blur sells "dissolving" without changing
+   the fragment's size or position. */
 @keyframes fragment-melt {
-  0%   { scale: 1 1; opacity: 1; filter: blur(0); }
-  100% { scale: 0.15 0.05; opacity: 0; filter: blur(2px); }
+  0%   { opacity: 1; filter: blur(0); }
+  100% { opacity: 0; filter: blur(3px); }
 }
 
 /* ---------- Sections ---------- */
@@ -315,11 +314,18 @@ ul {
    one of the watercolor background photos, dimmed enough to stay behind
    the text. */
 #news {
-  background-image: linear-gradient(rgba(11, 11, 11, 0.85), rgba(11, 11, 11, 0.85)), url("../images/gallery/background-1.jpg");
+  background-image: linear-gradient(rgba(11, 11, 11, 0.85), rgba(11, 11, 11, 0.85)), url("../images/gallery/background-1-sky.jpg");
 }
 
 #about {
-  background-image: linear-gradient(rgba(11, 11, 11, 0.85), rgba(11, 11, 11, 0.85)), url("../images/gallery/background-2.jpg");
+  /* Cropped to just the watercolor gradient (the source photo's bottom
+     ~20% is a solid "ground" band); the extra top/bottom gradient layer
+     fades this section's background to solid --bg at its edges so the
+     seam with the sections above/below is soft, not a hard cut. */
+  background-image:
+    linear-gradient(to bottom, var(--bg) 0%, transparent 12%, transparent 88%, var(--bg) 100%),
+    linear-gradient(rgba(11, 11, 11, 0.85), rgba(11, 11, 11, 0.85)),
+    url("../images/gallery/background-2-sky.jpg");
 }
 
 #music {
@@ -331,7 +337,11 @@ ul {
 }
 
 #contact {
-  background-image: linear-gradient(rgba(11, 11, 11, 0.85), rgba(11, 11, 11, 0.85)), url("../images/gallery/background-5-1.jpg");
+  /* background-5-1.jpg is a busy geometric collage (used as the ORIGIN
+     jacket in Works) rather than a calm gradient like the others, and
+     clashed badly as a full-bleed backdrop; reuse the News gradient
+     photo instead since these two sections are far apart on the page. */
+  background-image: linear-gradient(rgba(11, 11, 11, 0.85), rgba(11, 11, 11, 0.85)), url("../images/gallery/background-1-sky.jpg");
 }
 
 @media (min-width: 768px) {
@@ -504,31 +514,26 @@ ul {
 
 .member-list li {
   font-size: 14px;
-  color: var(--muted);
+  color: var(--ink);
 }
 
 .member-part {
   margin-right: 8px;
-  color: var(--ink);
-}
-
-.history-list {
-  border-top: 1px solid var(--line);
+  color: var(--muted);
 }
 
 .history-list li {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 20px 0;
-  border-bottom: 1px solid var(--line);
+  padding: 10px 0;
 }
 
 @media (min-width: 768px) {
   .history-list li {
     flex-direction: row;
     gap: 32px;
-    padding: 22px 0;
+    padding: 11px 0;
   }
 }
 
@@ -819,7 +824,7 @@ ul {
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 64px;
+  margin-bottom: 16px;
   padding-bottom: 8px;
   border-bottom: 1px solid var(--line);
   font-size: 22px;
@@ -838,6 +843,16 @@ ul {
 
 .contact-cta:hover .arrow {
   transform: translate(4px, -4px);
+}
+
+.contact-email {
+  margin: 0 0 64px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.contact-email a:hover {
+  color: var(--ink);
 }
 
 .social-list {

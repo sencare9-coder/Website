@@ -48,7 +48,7 @@
   /* ---------- Falling fragments ---------- */
 
   var FRAGMENT_IMAGE_COUNT = 103;
-  var FRAGMENT_COUNT = 24;
+  var FRAGMENT_COUNT = 36;
   var field = document.getElementById("fragment-field");
 
   function randomFragmentSrc() {
@@ -72,6 +72,8 @@
 
   function respawn(el) {
     el.classList.remove("popping", "fall");
+    el.style.removeProperty("translate");
+    el.style.removeProperty("rotate");
     randomize(el, false);
     // Force reflow so the animation restarts cleanly.
     void el.offsetWidth;
@@ -87,6 +89,12 @@
 
     el.addEventListener("mouseenter", function () {
       if (!el.classList.contains("popping")) {
+        // Freeze the current fall position/rotation as inline styles so
+        // popping only scales the fragment in place, instead of jumping
+        // back to its untransformed (top-of-field) position.
+        var computed = getComputedStyle(el);
+        el.style.translate = computed.translate;
+        el.style.rotate = computed.rotate;
         el.classList.remove("fall");
         el.classList.add("popping");
       }

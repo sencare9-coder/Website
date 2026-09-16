@@ -4,12 +4,13 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { FragmentField } from "@/components/effects/FragmentField";
 import { fadeIn, fadeUp } from "@/lib/animations";
+import { assetPath } from "@/lib/basePath";
 
 export function Hero() {
   return (
     <section id="top" className="relative h-[100svh] w-full overflow-hidden bg-bg">
       <Image
-        src="/images/hero/hero-wide.jpg"
+        src={assetPath("/images/hero/hero-wide.jpg")}
         alt="SensuCarens"
         fill
         priority

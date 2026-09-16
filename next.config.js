@@ -1,12 +1,15 @@
 /** @type {import('next').NextConfig} */
+const basePath = "/Website";
+
 const nextConfig = {
+  output: "export",
+  basePath,
+  trailingSlash: true,
+  env: {
+    NEXT_PUBLIC_BASE_PATH: basePath,
+  },
   images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "i.ytimg.com",
-      },
-    ],
+    unoptimized: true,
   },
 };
 

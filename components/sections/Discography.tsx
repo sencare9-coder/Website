@@ -3,6 +3,7 @@ import { works } from "@/lib/data/discography";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { FadeIn } from "@/components/ui/FadeIn";
+import { assetPath } from "@/lib/basePath";
 
 export function Discography() {
   return (
@@ -15,7 +16,7 @@ export function Discography() {
             <FadeIn key={work.id} delay={i * 0.06}>
               <div className="group relative aspect-square overflow-hidden bg-surface">
                 <Image
-                  src={work.image}
+                  src={assetPath(work.image)}
                   alt={work.title}
                   fill
                   sizes="(min-width: 768px) 25vw, 50vw"

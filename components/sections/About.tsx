@@ -3,6 +3,7 @@ import { members } from "@/lib/data/members";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { FadeIn } from "@/components/ui/FadeIn";
+import { assetPath } from "@/lib/basePath";
 
 export function About() {
   return (
@@ -14,7 +15,7 @@ export function About() {
           <FadeIn>
             <div className="relative aspect-[2/3] w-full max-w-md overflow-hidden bg-surface">
               <Image
-                src="/images/profile/profile.jpg"
+                src={assetPath("/images/profile/profile.jpg")}
                 alt="SensuCarens"
                 fill
                 sizes="(min-width: 768px) 480px, 100vw"

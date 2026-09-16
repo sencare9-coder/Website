@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { assetPath } from "@/lib/basePath";
 
 const FRAGMENT_IMAGE_COUNT = 103;
 
@@ -22,7 +23,7 @@ function randomFragment(slotId: number, generation: number, initial: boolean): F
   return {
     slotId,
     generation,
-    src: `/images/fragments/${String(num).padStart(3, "0")}.png`,
+    src: assetPath(`/images/fragments/${String(num).padStart(3, "0")}.png`),
     left: Math.random() * 92 + 2,
     size: Math.random() * 34 + 26,
     duration: Math.random() * 10 + 16,

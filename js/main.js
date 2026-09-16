@@ -63,11 +63,11 @@
   // clustering wherever independent random draws happen to land.
   var LANE_WIDTH = 100 / FRAGMENT_COUNT;
 
-  // On first load, delays are biased toward the end of INITIAL_RAMP_SECONDS
-  // (via sqrt of a uniform draw) so only a few fragments start right away
-  // and the rest join in gradually, reaching full density quickly instead
-  // of everything appearing at once.
-  var INITIAL_RAMP_SECONDS = 6;
+  // On first load, delays are spread uniformly across INITIAL_RAMP_SECONDS
+  // so a handful of fragments are already falling within the first instant
+  // (some draw a delay near 0), and the rest join in gradually over the
+  // next few seconds instead of everything appearing at once.
+  var INITIAL_RAMP_SECONDS = 4;
   // Respawns get a wide, uniform-random gap. A narrow range here made every
   // fragment's cycle (duration + gap) land in a similar range, so after the
   // initial ramp they gradually drifted back into sync and thinned out /
@@ -90,7 +90,7 @@
     // time - a synchronized dip in count every ~20s, not a steady rate.
     var duration = Math.random() * 28 + 12;
     var delay = initial
-      ? INITIAL_RAMP_SECONDS * Math.sqrt(Math.random())
+      ? Math.random() * INITIAL_RAMP_SECONDS
       : Math.random() * RESPAWN_GAP_MAX_SECONDS;
     el.style.animationDuration = duration + "s";
     el.style.animationDelay = delay + "s";
@@ -158,12 +158,31 @@
     pointerY = e.clientY;
   });
 
+  // Sample a small ring of points around the cursor, not just the exact
+  // pixel, so melting a small, constantly-moving fragment doesn't require
+  // pixel-perfect precision from a real mouse.
+  var HOVER_SAMPLE_OFFSETS = [
+    [0, 0], [10, 0], [-10, 0], [0, 10], [0, -10],
+    [7, 7], [-7, 7], [7, -7], [-7, -7],
+  ];
+
+  function findFragmentNearPointer() {
+    for (var i = 0; i < HOVER_SAMPLE_OFFSETS.length; i++) {
+      var hit = document.elementFromPoint(
+        pointerX + HOVER_SAMPLE_OFFSETS[i][0],
+        pointerY + HOVER_SAMPLE_OFFSETS[i][1]
+      );
+      if (hit && hit.classList && hit.classList.contains("fragment") && !hit.classList.contains("melting")) {
+        return hit;
+      }
+    }
+    return null;
+  }
+
   function pollFragmentHover() {
     if (pointerX >= 0) {
-      var hit = document.elementFromPoint(pointerX, pointerY);
-      if (hit && hit.classList.contains("fragment") && !hit.classList.contains("melting")) {
-        meltFragment(hit);
-      }
+      var hit = findFragmentNearPointer();
+      if (hit) meltFragment(hit);
     }
     requestAnimationFrame(pollFragmentHover);
   }

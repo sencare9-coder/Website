@@ -63,6 +63,17 @@
   // clustering wherever independent random draws happen to land.
   var LANE_WIDTH = 100 / FRAGMENT_COUNT;
 
+  // On first load, delays are biased toward the end of INITIAL_RAMP_SECONDS
+  // (via sqrt of a uniform draw) so only a few fragments start right away
+  // and the rest join in gradually, reaching full density quickly instead
+  // of everything appearing at once.
+  var INITIAL_RAMP_SECONDS = 6;
+  // Respawns get a wide, uniform-random gap. A narrow range here made every
+  // fragment's cycle (duration + gap) land in a similar range, so after the
+  // initial ramp they gradually drifted back into sync and thinned out /
+  // clumped together at the same time instead of falling continuously.
+  var RESPAWN_GAP_MAX_SECONDS = 14;
+
   function randomize(el, initial, laneIndex) {
     el.src = randomFragmentSrc();
     var laneStart = laneIndex * LANE_WIDTH;
@@ -72,8 +83,15 @@
     el.style.setProperty("--drift", (Math.random() * 60 + 20) + "px");
     el.style.setProperty("--rot-from", (Math.random() * 40 - 20) + "deg");
     el.style.setProperty("--rot-to", (Math.random() * 280 + 40) + "deg");
-    var duration = Math.random() * 10 + 16;
-    var delay = initial ? Math.random() * 16 : Math.random() * 2.5;
+    // Wide duration spread (not just a wide gap) matters: with everyone
+    // starting within the first ~6s, a narrow duration range made the
+    // whole fleet land its *first* fall within a similar few-second
+    // window too, so they all needed to respawn again around the same
+    // time - a synchronized dip in count every ~20s, not a steady rate.
+    var duration = Math.random() * 28 + 12;
+    var delay = initial
+      ? INITIAL_RAMP_SECONDS * Math.sqrt(Math.random())
+      : Math.random() * RESPAWN_GAP_MAX_SECONDS;
     el.style.animationDuration = duration + "s";
     el.style.animationDelay = delay + "s";
   }
@@ -88,25 +106,23 @@
     el.classList.add("fall");
   }
 
+  function meltFragment(el) {
+    // Freeze the current fall position/rotation as inline styles so
+    // melting only shrinks/fades the fragment in place, instead of
+    // jumping back to its untransformed (top-of-field) position.
+    var computed = getComputedStyle(el);
+    el.style.translate = computed.translate;
+    el.style.rotate = computed.rotate;
+    el.classList.remove("fall");
+    el.classList.add("melting");
+  }
+
   function createFragment(laneIndex) {
     var el = document.createElement("img");
     el.className = "fragment";
     el.alt = "";
     el.draggable = false;
     randomize(el, true, laneIndex);
-
-    el.addEventListener("mouseenter", function () {
-      if (!el.classList.contains("melting")) {
-        // Freeze the current fall position/rotation as inline styles so
-        // melting only shrinks/fades the fragment in place, instead of
-        // jumping back to its untransformed (top-of-field) position.
-        var computed = getComputedStyle(el);
-        el.style.translate = computed.translate;
-        el.style.rotate = computed.rotate;
-        el.classList.remove("fall");
-        el.classList.add("melting");
-      }
-    });
 
     el.addEventListener("animationend", function () {
       respawn(el, laneIndex);
@@ -129,6 +145,29 @@
     lanes[k] = tmp;
   }
   lanes.forEach(createFragment);
+
+  // A plain "mouseenter" listener only fires on actual pointer movement, so
+  // a falling fragment that drifts under an already-stationary cursor would
+  // never trigger it. Instead, track the last known pointer position and
+  // hit-test it every frame, so melting also catches a fragment moving
+  // into a cursor that isn't moving itself.
+  var pointerX = -1;
+  var pointerY = -1;
+  window.addEventListener("mousemove", function (e) {
+    pointerX = e.clientX;
+    pointerY = e.clientY;
+  });
+
+  function pollFragmentHover() {
+    if (pointerX >= 0) {
+      var hit = document.elementFromPoint(pointerX, pointerY);
+      if (hit && hit.classList.contains("fragment") && !hit.classList.contains("melting")) {
+        meltFragment(hit);
+      }
+    }
+    requestAnimationFrame(pollFragmentHover);
+  }
+  requestAnimationFrame(pollFragmentHover);
 
   /* ---------- Music carousel ---------- */
 

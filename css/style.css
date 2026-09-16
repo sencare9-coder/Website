@@ -206,6 +206,10 @@ ul {
   justify-content: center;
   text-align: center;
   padding: 0 24px;
+  /* This box spans the whole hero even though only its text is visible;
+     without this it sits above the fragment layer in z-order and
+     silently swallows hover/click on every fragment passing behind it. */
+  pointer-events: none;
 }
 
 .hero-title {
@@ -252,6 +256,7 @@ ul {
   letter-spacing: 0.3em;
   color: var(--muted);
   opacity: 0;
+  pointer-events: none;
   animation: fade-in 1s ease 1.2s forwards;
 }
 

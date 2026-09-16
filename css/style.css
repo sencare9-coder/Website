@@ -5,6 +5,7 @@
   --muted: #8a8a86;
   --line: #2a2a2a;
   --font-sans: "Helvetica Neue", Arial, "Hiragino Sans", "Noto Sans JP", sans-serif;
+  --font-display: "Cormorant Garamond", "Hiragino Mincho ProN", serif;
 }
 
 * {
@@ -178,14 +179,6 @@ ul {
   height: 100%;
   object-fit: cover;
   object-position: center;
-  opacity: 0.8;
-}
-
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 10;
-  background: linear-gradient(to bottom, rgba(11, 11, 11, 0.4), rgba(11, 11, 11, 0.2) 40%, var(--bg));
 }
 
 .fragment-field {
@@ -213,10 +206,11 @@ ul {
 }
 
 .hero-title {
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: -0.04em;
-  line-height: 0.85;
+  letter-spacing: 0.02em;
+  line-height: 0.9;
   font-size: 11vw;
   margin: 0;
   opacity: 0;
@@ -278,7 +272,6 @@ ul {
   animation-timing-function: ease-in;
   animation-duration: 0.45s !important;
   animation-delay: 0s !important;
-  transform-origin: center bottom;
 }
 
 /* translate/rotate/scale are animated as separate properties (not the
@@ -292,13 +285,13 @@ ul {
   100% { translate: calc(var(--drift) * 0.3) 120vh; opacity: 0.85; }
 }
 
-/* Melts like snow: sinks and flattens (squashed vertical scale) while
-   softening and fading, rather than bursting outward. Kept short and
-   with a bigger scale swing so the reaction to a hover reads clearly. */
+/* Melts like snow: shrinks straight down toward nothing (no growth
+   phase, default center transform-origin matching the fall animation)
+   while softening and fading, instead of bursting outward or jumping
+   to a different anchor point. */
 @keyframes fragment-melt {
   0%   { scale: 1 1; opacity: 1; filter: blur(0); }
-  30%  { scale: 1.15 0.5; opacity: 0.85; filter: blur(1px); }
-  100% { scale: 0.5 0.02; opacity: 0; filter: blur(3px); }
+  100% { scale: 0.15 0.05; opacity: 0; filter: blur(2px); }
 }
 
 /* ---------- Sections ---------- */
@@ -333,9 +326,10 @@ ul {
 
 .title {
   margin: 0;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: -0.04em;
+  letter-spacing: 0.02em;
   line-height: 0.9;
   font-size: 36px;
 }
@@ -440,14 +434,19 @@ ul {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: grayscale(1);
 }
 
 .about-text {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 48px;
+  gap: 32px;
+}
+
+.about-name {
+  margin: 0;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
 }
 
 .statement {
@@ -479,6 +478,49 @@ ul {
   color: var(--ink);
 }
 
+.history-list {
+  margin-top: 64px;
+  border-top: 1px solid var(--line);
+}
+
+@media (min-width: 768px) {
+  .history-list {
+    margin-top: 80px;
+  }
+}
+
+.history-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+@media (min-width: 768px) {
+  .history-list li {
+    flex-direction: row;
+    gap: 32px;
+    padding: 22px 0;
+  }
+}
+
+.history-date {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+@media (min-width: 768px) {
+  .history-date {
+    width: 112px;
+    flex-shrink: 0;
+  }
+}
+
+.history-text {
+  font-size: 14px;
+}
+
 /* ---------- Works ---------- */
 
 .works-grid {
@@ -505,13 +547,11 @@ ul {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: grayscale(1);
-  transition: transform 0.7s ease, filter 0.7s ease;
+  transition: transform 0.7s ease;
 }
 
 .work-card:hover img {
   transform: scale(1.1);
-  filter: grayscale(0);
 }
 
 .work-info {
@@ -637,12 +677,6 @@ ul {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: grayscale(1);
-  transition: filter 0.5s ease;
-}
-
-.video-thumb:hover img {
-  filter: grayscale(0);
 }
 
 .video-thumb .play-btn {

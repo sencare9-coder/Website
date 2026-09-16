@@ -63,18 +63,19 @@
   // clustering wherever independent random draws happen to land.
   var LANE_WIDTH = 100 / FRAGMENT_COUNT;
 
-  // On first load, delays are spread uniformly across INITIAL_RAMP_SECONDS
-  // so a handful of fragments are already falling within the first instant
-  // (some draw a delay near 0), and the rest join in gradually over the
-  // next few seconds instead of everything appearing at once.
-  var INITIAL_RAMP_SECONDS = 4;
+  // On first load, a handful of lanes start with delay 0 - so motion is
+  // visible the instant the page opens instead of only "eventually" - and
+  // the rest join in over a short ramp, instead of everything appearing
+  // at once.
+  var IMMEDIATE_LANE_COUNT = 8;
+  var INITIAL_RAMP_SECONDS = 2;
   // Respawns get a wide, uniform-random gap. A narrow range here made every
   // fragment's cycle (duration + gap) land in a similar range, so after the
   // initial ramp they gradually drifted back into sync and thinned out /
   // clumped together at the same time instead of falling continuously.
   var RESPAWN_GAP_MAX_SECONDS = 14;
 
-  function randomize(el, initial, laneIndex) {
+  function randomize(el, initial, laneIndex, immediate) {
     el.src = randomFragmentSrc();
     var laneStart = laneIndex * LANE_WIDTH;
     var jitter = Math.random() * (LANE_WIDTH * 0.8) + LANE_WIDTH * 0.1;
@@ -89,7 +90,9 @@
     // window too, so they all needed to respawn again around the same
     // time - a synchronized dip in count every ~20s, not a steady rate.
     var duration = Math.random() * 28 + 12;
-    var delay = initial
+    var delay = immediate
+      ? 0
+      : initial
       ? Math.random() * INITIAL_RAMP_SECONDS
       : Math.random() * RESPAWN_GAP_MAX_SECONDS;
     el.style.animationDuration = duration + "s";
@@ -117,12 +120,12 @@
     el.classList.add("melting");
   }
 
-  function createFragment(laneIndex) {
+  function createFragment(laneIndex, immediate) {
     var el = document.createElement("img");
     el.className = "fragment";
     el.alt = "";
     el.draggable = false;
-    randomize(el, true, laneIndex);
+    randomize(el, true, laneIndex, immediate);
 
     el.addEventListener("animationend", function () {
       respawn(el, laneIndex);
@@ -144,7 +147,9 @@
     lanes[j] = lanes[k];
     lanes[k] = tmp;
   }
-  lanes.forEach(createFragment);
+  lanes.forEach(function (laneIndex, i) {
+    createFragment(laneIndex, i < IMMEDIATE_LANE_COUNT);
+  });
 
   // A plain "mouseenter" listener only fires on actual pointer movement, so
   // a falling fragment that drifts under an already-stationary cursor would

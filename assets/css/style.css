@@ -151,12 +151,21 @@ h1, h2, h3 { margin: 0; }
   overflow: hidden;
 }
 
+.hero-bg-blur {
+  position: absolute;
+  inset: -60px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(90px) saturate(1.15) brightness(0.8);
+  transform: scale(1.2);
+}
+
 .hero-bg {
   position: absolute;
   inset: 0;
-  background-size: cover;
+  background-size: contain;
+  background-repeat: no-repeat;
   background-position: center;
-  transform: scale(1.02);
 }
 
 .hero-scrim {

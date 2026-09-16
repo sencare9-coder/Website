@@ -57,9 +57,17 @@
     return "images/fragments/" + padded + ".png";
   }
 
-  function randomize(el, initial) {
+  // Each fragment keeps a fixed horizontal "lane" for its whole lifetime
+  // (across respawns) and only jitters within that lane, so the 36
+  // fragments stay spread evenly across the full width instead of
+  // clustering wherever independent random draws happen to land.
+  var LANE_WIDTH = 100 / FRAGMENT_COUNT;
+
+  function randomize(el, initial, laneIndex) {
     el.src = randomFragmentSrc();
-    el.style.left = (Math.random() * 92 + 2) + "%";
+    var laneStart = laneIndex * LANE_WIDTH;
+    var jitter = Math.random() * (LANE_WIDTH * 0.8) + LANE_WIDTH * 0.1;
+    el.style.left = (laneStart + jitter) + "%";
     el.style.height = (Math.random() * 34 + 26) + "px";
     el.style.setProperty("--drift", (Math.random() * 60 + 20) + "px");
     el.style.setProperty("--rot-from", (Math.random() * 40 - 20) + "deg");
@@ -70,38 +78,38 @@
     el.style.animationDelay = delay + "s";
   }
 
-  function respawn(el) {
-    el.classList.remove("popping", "fall");
+  function respawn(el, laneIndex) {
+    el.classList.remove("melting", "fall");
     el.style.removeProperty("translate");
     el.style.removeProperty("rotate");
-    randomize(el, false);
+    randomize(el, false, laneIndex);
     // Force reflow so the animation restarts cleanly.
     void el.offsetWidth;
     el.classList.add("fall");
   }
 
-  function createFragment(initial) {
+  function createFragment(laneIndex) {
     var el = document.createElement("img");
     el.className = "fragment";
     el.alt = "";
     el.draggable = false;
-    randomize(el, initial);
+    randomize(el, true, laneIndex);
 
     el.addEventListener("mouseenter", function () {
-      if (!el.classList.contains("popping")) {
+      if (!el.classList.contains("melting")) {
         // Freeze the current fall position/rotation as inline styles so
-        // popping only scales the fragment in place, instead of jumping
-        // back to its untransformed (top-of-field) position.
+        // melting only shrinks/fades the fragment in place, instead of
+        // jumping back to its untransformed (top-of-field) position.
         var computed = getComputedStyle(el);
         el.style.translate = computed.translate;
         el.style.rotate = computed.rotate;
         el.classList.remove("fall");
-        el.classList.add("popping");
+        el.classList.add("melting");
       }
     });
 
     el.addEventListener("animationend", function () {
-      respawn(el);
+      respawn(el, laneIndex);
     });
 
     field.appendChild(el);
@@ -110,9 +118,17 @@
     });
   }
 
-  for (var i = 0; i < FRAGMENT_COUNT; i++) {
-    createFragment(true);
+  // Shuffle lane indices so the initial fall order doesn't visibly sweep
+  // left-to-right on page load.
+  var lanes = [];
+  for (var i = 0; i < FRAGMENT_COUNT; i++) lanes.push(i);
+  for (var j = lanes.length - 1; j > 0; j--) {
+    var k = Math.floor(Math.random() * (j + 1));
+    var tmp = lanes[j];
+    lanes[j] = lanes[k];
+    lanes[k] = tmp;
   }
+  lanes.forEach(createFragment);
 
   /* ---------- Music carousel ---------- */
 

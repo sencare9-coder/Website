@@ -53,23 +53,39 @@
   /* ---------- Falling fragments ---------- */
 
   var FRAGMENT_IMAGE_COUNT = 103;
-  var FRAGMENT_COUNT = 172; // 86 * 2
+  var FRAGMENT_COUNT = 172;
   var field = document.getElementById("fragment-field");
   var fragmentZone = document.querySelector(".fragment-zone");
 
-  // The fall keyframes are authored for one screen height (hero-sized).
-  // --fall-scale stretches that same shape to cover the whole zone
-  // (hero through Live), so fragments born near the top of the page
-  // are still falling by the time that scroll position reaches Live's
-  // bottom edge, where the zone's overflow:hidden clips them away.
-  var fallScale = 1;
-  function updateFallScale() {
-    fallScale = Math.max(fragmentZone.offsetHeight / window.innerHeight, 1);
-    field.style.setProperty("--fall-scale", fallScale);
+  function shuffle(arr) {
+    for (var j = arr.length - 1; j > 0; j--) {
+      var k = Math.floor(Math.random() * (j + 1));
+      var tmp = arr[j];
+      arr[j] = arr[k];
+      arr[k] = tmp;
+    }
+    return arr;
   }
-  updateFallScale();
-  window.addEventListener("resize", updateFallScale);
-  window.addEventListener("load", updateFallScale);
+
+  // Rather than stretching one long journey across the whole page (which
+  // either made fragments crawl for minutes or made them fade in/out at
+  // random midway points instead of visibly entering from above), the
+  // zone is split into screen-height "bands" and each fragment is
+  // permanently assigned to one. Within its own band it falls the same
+  // short, fast, well-tested distance the hero always used - fading in
+  // just above its band and melting/respawning at its band's bottom -
+  // so every band keeps its own steady, even snowfall going forever, and
+  // the many bands together cover the full hero-through-Live height.
+  // --vh-px (updated on resize) converts a band index into a pixel
+  // offset so the CSS keyframes can add it to the local fall position.
+  function updateVhPx() {
+    field.style.setProperty("--vh-px", window.innerHeight + "px");
+  }
+  updateVhPx();
+  window.addEventListener("resize", updateVhPx);
+  window.addEventListener("load", updateVhPx);
+
+  var BAND_COUNT = Math.max(Math.round(fragmentZone.offsetHeight / window.innerHeight), 1);
 
   function randomFragmentSrc() {
     var num = Math.floor(Math.random() * FRAGMENT_IMAGE_COUNT) + 1;
@@ -83,7 +99,19 @@
   // clustering wherever independent random draws happen to land.
   var LANE_WIDTH = 100 / FRAGMENT_COUNT;
 
-  function randomize(el, laneIndex) {
+  // On first load, a handful of lanes start with delay 0 - so motion is
+  // visible the instant the page opens instead of only "eventually" - and
+  // the rest join in over a short ramp, instead of everything appearing
+  // at once.
+  var IMMEDIATE_LANE_COUNT = Math.round(FRAGMENT_COUNT / BAND_COUNT);
+  var INITIAL_RAMP_SECONDS = 2;
+  // Respawns get a wide, uniform-random gap. A narrow range here made every
+  // fragment's cycle (duration + gap) land in a similar range, so after the
+  // initial ramp they gradually drifted back into sync and thinned out /
+  // clumped together at the same time instead of falling continuously.
+  var RESPAWN_GAP_MAX_SECONDS = 14;
+
+  function randomize(el, initial, laneIndex, immediate) {
     el.src = randomFragmentSrc();
     var laneStart = laneIndex * LANE_WIDTH;
     var jitter = Math.random() * (LANE_WIDTH * 0.8) + LANE_WIDTH * 0.1;
@@ -92,35 +120,26 @@
     el.style.setProperty("--drift", (Math.random() * 60 + 20) + "px");
     el.style.setProperty("--rot-from", (Math.random() * 40 - 20) + "deg");
     el.style.setProperty("--rot-to", (Math.random() * 280 + 40) + "deg");
-    // Wide duration spread matters: with everyone starting from a similar
-    // point, a narrow duration range made the whole fleet land its *next*
-    // fall within a similar few-second window too, so they all needed to
-    // respawn again around the same time - a synchronized dip in count,
-    // not a steady rate.
-    var duration = (Math.random() * 28 + 12) * fallScale;
-    // The delay is derived from the real clock (plus a random per-call
-    // offset) rather than from a fresh Math.random() draw, so the page
-    // load itself isn't treated as "the moment the snow started" - two
-    // loads/reloads a few seconds apart land at positions a few seconds
-    // apart too, like catching an already-falling snow a little later,
-    // instead of the fall visibly restarting from scratch every time the
-    // site is opened. This also doubles as the fix for respawns: a
-    // respawn that always restarted at the literal top would, over the
-    // long (zone-spanning) durations here, gradually drain every
-    // fragment out of the upper sections until its own multi-minute
-    // cycle finished, so this re-seeds every respawn to a random point
-    // anywhere in the whole zone too, and the fall never "runs dry".
-    var phaseOffset = Math.random() * duration;
-    var elapsedInCycle = ((Date.now() / 1000) + phaseOffset) % duration;
+    // Wide duration spread (not just a wide gap) matters: with everyone
+    // starting within the first ~6s, a narrow duration range made the
+    // whole fleet land its *first* fall within a similar few-second
+    // window too, so they all needed to respawn again around the same
+    // time - a synchronized dip in count every ~20s, not a steady rate.
+    var duration = Math.random() * 28 + 12;
+    var delay = immediate
+      ? 0
+      : initial
+      ? Math.random() * INITIAL_RAMP_SECONDS
+      : Math.random() * RESPAWN_GAP_MAX_SECONDS;
     el.style.animationDuration = duration + "s";
-    el.style.animationDelay = -elapsedInCycle + "s";
+    el.style.animationDelay = delay + "s";
   }
 
   function respawn(el, laneIndex) {
     el.classList.remove("melting", "fall");
     el.style.removeProperty("translate");
     el.style.removeProperty("rotate");
-    randomize(el, laneIndex);
+    randomize(el, false, laneIndex);
     // Force reflow so the animation restarts cleanly.
     void el.offsetWidth;
     el.classList.add("fall");
@@ -137,12 +156,13 @@
     el.classList.add("melting");
   }
 
-  function createFragment(laneIndex) {
+  function createFragment(laneIndex, bandIndex, immediate) {
     var el = document.createElement("img");
     el.className = "fragment";
     el.alt = "";
     el.draggable = false;
-    randomize(el, laneIndex);
+    el.style.setProperty("--band-index", bandIndex);
+    randomize(el, true, laneIndex, immediate);
 
     el.addEventListener("animationend", function () {
       respawn(el, laneIndex);
@@ -155,17 +175,20 @@
   }
 
   // Shuffle lane indices so the initial fall order doesn't visibly sweep
-  // left-to-right on page load.
-  var lanes = [];
-  for (var i = 0; i < FRAGMENT_COUNT; i++) lanes.push(i);
-  for (var j = lanes.length - 1; j > 0; j--) {
-    var k = Math.floor(Math.random() * (j + 1));
-    var tmp = lanes[j];
-    lanes[j] = lanes[k];
-    lanes[k] = tmp;
-  }
-  lanes.forEach(function (laneIndex) {
-    createFragment(laneIndex);
+  // left-to-right on page load, and independently shuffle a band for
+  // each fragment so every band gets a roughly even, decorrelated share.
+  var lanes = shuffle((function () {
+    var arr = [];
+    for (var i = 0; i < FRAGMENT_COUNT; i++) arr.push(i);
+    return arr;
+  })());
+  var bands = shuffle((function () {
+    var arr = [];
+    for (var i = 0; i < FRAGMENT_COUNT; i++) arr.push(i % BAND_COUNT);
+    return arr;
+  })());
+  lanes.forEach(function (laneIndex, i) {
+    createFragment(laneIndex, bands[i], i < IMMEDIATE_LANE_COUNT);
   });
 
   // A plain "mouseenter" listener only fires on actual pointer movement, so

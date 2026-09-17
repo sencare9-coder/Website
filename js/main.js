@@ -48,7 +48,7 @@
   /* ---------- Falling fragments ---------- */
 
   var FRAGMENT_IMAGE_COUNT = 103;
-  var FRAGMENT_COUNT = 43; // 36 * 1.2, rounded
+  var FRAGMENT_COUNT = 86; // 43 * 2
   var field = document.getElementById("fragment-field");
   var fragmentZone = document.querySelector(".fragment-zone");
 

@@ -385,7 +385,10 @@ ul {
 }
 
 #contact {
-  background-image: url("../images/gallery/background-5-1.jpg");
+  /* Recropped so the artwork's radiating center sits at the image's own
+     center, keeping it aligned with the email address regardless of
+     viewport width (background-position stays "center" from .section). */
+  background-image: url("../images/gallery/background-5-1-centered.jpg");
 }
 
 @media (min-width: 768px) {

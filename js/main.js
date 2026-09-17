@@ -193,6 +193,19 @@
   }
   requestAnimationFrame(pollFragmentHover);
 
+  // The fragment field is fixed to the viewport so it drifts over every
+  // section from the hero through Live, then fades out once Live has
+  // scrolled past so it doesn't linger over Contact.
+  var liveSection = document.getElementById("live");
+  function updateFragmentFieldVisibility() {
+    var liveBottom = liveSection.offsetTop + liveSection.offsetHeight;
+    var viewportBottom = window.scrollY + window.innerHeight;
+    field.style.opacity = viewportBottom < liveBottom ? "1" : "0";
+  }
+  window.addEventListener("scroll", updateFragmentFieldVisibility, { passive: true });
+  window.addEventListener("resize", updateFragmentFieldVisibility);
+  updateFragmentFieldVisibility();
+
   /* ---------- Music carousel ---------- */
 
   var carousel = document.getElementById("music-carousel");

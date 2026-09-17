@@ -210,12 +210,17 @@ ul {
   pointer-events: none;
 }
 
+/* Fixed to the viewport (not the hero) so the same falling fragments
+   keep drifting over News/About/Works/Music/Live as the page scrolls,
+   instead of stopping at the bottom of the hero. JS fades it out once
+   the Live section has scrolled past. */
 .fragment-field {
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 20;
   overflow: hidden;
   pointer-events: none;
+  transition: opacity 0.4s ease;
 }
 
 .hero-content {
@@ -347,6 +352,18 @@ ul {
   /* Keeps white text/borders legible over the bright, full-color photo
      backgrounds without dimming the photos themselves. */
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
+}
+
+/* The fixed fragment-field (z-index 20) drifts over these sections'
+   backgrounds, so their actual content needs to sit above it. */
+#news > .wrap,
+#about > .wrap,
+#about > .wrap-wide,
+#works > .wrap,
+#music > .wrap-wide,
+#live > .wrap {
+  position: relative;
+  z-index: 21;
 }
 
 /* A flat black page reads as boring past the hero, so each section gets

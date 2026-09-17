@@ -810,6 +810,7 @@ a.news-title:hover {
   border-radius: 50%;
   border: 1px solid var(--line);
   background: rgba(11, 11, 11, 0.6);
+  color: var(--ink);
   display: flex;
   align-items: center;
   justify-content: center;

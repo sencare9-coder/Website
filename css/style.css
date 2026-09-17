@@ -483,12 +483,17 @@ ul {
 
 .news-title {
   font-size: 14px;
+  transition: color 0.2s ease;
 }
 
 @media (min-width: 768px) {
   .news-title {
     font-size: 16px;
   }
+}
+
+a.news-title:hover {
+  color: var(--muted);
 }
 
 /* ---------- About ---------- */

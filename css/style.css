@@ -81,7 +81,6 @@ ul {
 .site-header.scrolled {
   background: rgba(11, 11, 11, 0.9);
   backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--line);
 }
 
 .header-inner {
@@ -962,7 +961,6 @@ a.news-title:hover {
 /* ---------- Footer ---------- */
 
 .site-footer {
-  border-top: 1px solid var(--line);
   padding: 48px 0;
 }
 

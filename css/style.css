@@ -526,7 +526,9 @@ a.news-title:hover {
 
 .about-photo {
   position: relative;
-  aspect-ratio: 2 / 3;
+  /* Matches the photo's own proportions so object-fit: cover doesn't
+     have to crop the sides (which cut off the people at each end). */
+  aspect-ratio: 1200 / 1594;
   width: 100%;
   max-width: 420px;
   overflow: hidden;

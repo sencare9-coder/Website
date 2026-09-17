@@ -78,13 +78,7 @@
   // clustering wherever independent random draws happen to land.
   var LANE_WIDTH = 100 / FRAGMENT_COUNT;
 
-  // Respawns get a wide, uniform-random gap. A narrow range here made every
-  // fragment's cycle (duration + gap) land in a similar range, so after the
-  // initial ramp they gradually drifted back into sync and thinned out /
-  // clumped together at the same time instead of falling continuously.
-  var RESPAWN_GAP_MAX_SECONDS = 14;
-
-  function randomize(el, initial, laneIndex) {
+  function randomize(el, laneIndex) {
     el.src = randomFragmentSrc();
     var laneStart = laneIndex * LANE_WIDTH;
     var jitter = Math.random() * (LANE_WIDTH * 0.8) + LANE_WIDTH * 0.1;
@@ -93,24 +87,21 @@
     el.style.setProperty("--drift", (Math.random() * 60 + 20) + "px");
     el.style.setProperty("--rot-from", (Math.random() * 40 - 20) + "deg");
     el.style.setProperty("--rot-to", (Math.random() * 280 + 40) + "deg");
-    // Wide duration spread (not just a wide gap) matters: with everyone
-    // starting within the first ~6s, a narrow duration range made the
-    // whole fleet land its *first* fall within a similar few-second
-    // window too, so they all needed to respawn again around the same
-    // time - a synchronized dip in count every ~20s, not a steady rate.
+    // Wide duration spread matters: with everyone starting from a similar
+    // point, a narrow duration range made the whole fleet land its *next*
+    // fall within a similar few-second window too, so they all needed to
+    // respawn again around the same time - a synchronized dip in count,
+    // not a steady rate.
     var duration = (Math.random() * 28 + 12) * fallScale;
-    var delay;
-    if (initial) {
-      // A zero/small delay would start every fragment at the very top of
-      // the (now much taller) zone, so the lower sections would sit
-      // empty until the first fragments had spent real minutes falling
-      // that far down. A negative delay instead starts each one already
-      // partway - anywhere from just beginning to nearly done - so the
-      // whole zone is populated with fragments the instant the page loads.
-      delay = -Math.random() * duration;
-    } else {
-      delay = Math.random() * RESPAWN_GAP_MAX_SECONDS;
-    }
+    // A respawn that always restarts at the literal top would, over the
+    // long (zone-spanning) durations here, gradually drain every
+    // fragment down and out of the upper sections - each one only
+    // returns to the top after its own multi-minute fall completes, so
+    // whatever section the user scrolls back to can sit empty for a
+    // long stretch. A negative delay instead re-seeds every respawn to a
+    // random point anywhere in the whole zone, exactly like the initial
+    // placement, so the fall never "runs dry" in any one spot over time.
+    var delay = -Math.random() * duration;
     el.style.animationDuration = duration + "s";
     el.style.animationDelay = delay + "s";
   }
@@ -119,7 +110,7 @@
     el.classList.remove("melting", "fall");
     el.style.removeProperty("translate");
     el.style.removeProperty("rotate");
-    randomize(el, false, laneIndex);
+    randomize(el, laneIndex);
     // Force reflow so the animation restarts cleanly.
     void el.offsetWidth;
     el.classList.add("fall");
@@ -141,7 +132,7 @@
     el.className = "fragment";
     el.alt = "";
     el.draggable = false;
-    randomize(el, true, laneIndex);
+    randomize(el, laneIndex);
 
     el.addEventListener("animationend", function () {
       respawn(el, laneIndex);

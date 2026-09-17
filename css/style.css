@@ -360,32 +360,14 @@ ul {
     url("../images/gallery/background-5-2.jpg");
 }
 
-#about {
-  /* Cropped to just the watercolor gradient (the source photo's bottom
-     ~20% is a solid "ground" band). */
-  background-image:
-    linear-gradient(to bottom, var(--bg) 0%, transparent 12%, transparent 88%, var(--bg) 100%),
-    url("../images/gallery/background-1-sky.jpg");
-}
-
-#works {
-  background-image:
-    linear-gradient(to bottom, var(--bg) 0%, transparent 12%, transparent 88%, var(--bg) 100%),
-    url("../images/gallery/background-4.jpg");
-}
-
-#music {
-  background-image:
-    linear-gradient(to bottom, var(--bg) 0%, transparent 12%, transparent 88%, var(--bg) 100%),
-    url("../images/gallery/background-3.jpg");
-}
-
+/* About, Works, Music and Live all share the same uniform "ground"
+   crop of background-3.jpg (no fade layer needed) so they read as one
+   continuous backdrop instead of separate photos. */
+#about,
+#works,
+#music,
 #live {
-  /* Cropped to just the watercolor gradient, same as About (the source
-     photo's bottom ~20% is a solid "ground" band). */
-  background-image:
-    linear-gradient(to bottom, var(--bg) 0%, transparent 12%, transparent 88%, var(--bg) 100%),
-    url("../images/gallery/background-2-sky.jpg");
+  background-image: url("../images/gallery/background-3-ground.jpg");
 }
 
 #contact {

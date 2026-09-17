@@ -808,19 +808,31 @@ ul {
   margin: 0;
 }
 
-.live-date {
-  font-size: 12px;
-  color: var(--muted);
+.live-date,
+.live-venue {
+  font-size: 14px;
+  color: var(--ink);
 }
 
 @media (min-width: 768px) {
-  .live-date {
-    width: 112px;
+  .live-date,
+  .live-venue {
+    font-size: 16px;
   }
 }
 
+.live-venue {
+  transition: color 0.2s ease;
+}
+
+.live-venue:hover {
+  color: var(--muted);
+}
+
 .live-title {
+  margin: 0;
   font-size: 14px;
+  color: var(--muted);
 }
 
 @media (min-width: 768px) {
@@ -829,30 +841,12 @@ ul {
   }
 }
 
-.live-venue {
-  font-size: 12px;
-  color: var(--muted);
-  transition: color 0.2s ease;
-}
-
-.live-venue:hover {
-  color: var(--ink);
-}
-
 .live-line2,
 .live-line3,
 .live-line4 {
   margin: 0;
   font-size: 12px;
   color: var(--muted);
-}
-
-@media (min-width: 768px) {
-  .live-line2,
-  .live-line3,
-  .live-line4 {
-    padding-left: 136px;
-  }
 }
 
 /* ---------- Contact ---------- */

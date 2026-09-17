@@ -142,7 +142,7 @@
     el.style.setProperty("--drift", (Math.random() * 60 + 20) + "px");
     el.style.setProperty("--rot-from", (Math.random() * 40 - 20) + "deg");
     el.style.setProperty("--rot-to", (Math.random() * 280 + 40) + "deg");
-    var duration = Math.random() * 30 + 35;
+    var duration = Math.random() * 40 + 50;
     var delay;
     if (!initial) {
       delay = Math.random() * RESPAWN_GAP_MAX_SECONDS;

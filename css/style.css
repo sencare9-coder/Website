@@ -362,9 +362,7 @@ ul {
 }
 
 #contact {
-  background-image:
-    linear-gradient(to bottom, var(--bg) 0%, transparent 12%, transparent 88%, var(--bg) 100%),
-    url("../images/gallery/background-5-1.jpg");
+  background-image: url("../images/gallery/background-5-1.jpg");
 }
 
 @media (min-width: 768px) {

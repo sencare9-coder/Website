@@ -344,6 +344,9 @@ ul {
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
+  /* Keeps white text/borders legible over the bright, full-color photo
+     backgrounds without dimming the photos themselves. */
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
 }
 
 /* A flat black page reads as boring past the hero, so each section gets

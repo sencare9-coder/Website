@@ -328,17 +328,16 @@ ul {
 
 /* translate/rotate/scale are animated as separate properties (not the
    combined `transform` shorthand) so melting can scale a fragment in
-   place without resetting its fall position/rotation. Each fragment
-   falls the same short, original one-screen distance, offset down by
-   its own fixed --band-index * --vh-px (see main.js) so the many bands
-   together cover the whole hero-through-Live height while each one
-   keeps the original, well-tuned single-screen fall timing. */
+   place without resetting its fall position/rotation. --fall-scale
+   (set in JS from the fragment zone's actual height) stretches the
+   original one-screen fall shape so every fragment makes one
+   continuous run from above the hero all the way through Live. */
 @keyframes fragment-fall {
-  0%   { translate: 0 calc(var(--band-index, 0) * var(--vh-px, 0px) + -20vh); rotate: var(--rot-from); opacity: 0; }
+  0%   { translate: 0 calc(-20vh * var(--fall-scale, 1)); rotate: var(--rot-from); opacity: 0; }
   6%   { opacity: 0.9; }
-  30%  { translate: var(--drift) calc(var(--band-index, 0) * var(--vh-px, 0px) + 15vh); rotate: var(--rot-to); }
-  60%  { translate: calc(var(--drift) * -0.7) calc(var(--band-index, 0) * var(--vh-px, 0px) + 55vh); opacity: 0.9; }
-  100% { translate: calc(var(--drift) * 0.3) calc(var(--band-index, 0) * var(--vh-px, 0px) + 120vh); opacity: 0.85; }
+  30%  { translate: var(--drift) calc(15vh * var(--fall-scale, 1)); rotate: var(--rot-to); }
+  60%  { translate: calc(var(--drift) * -0.7) calc(55vh * var(--fall-scale, 1)); opacity: 0.9; }
+  100% { translate: calc(var(--drift) * 0.3) calc(120vh * var(--fall-scale, 1)); opacity: 0.85; }
 }
 
 /* Melts like snow: stays full size and just fades away quickly, rather

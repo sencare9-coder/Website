@@ -57,35 +57,23 @@
   var field = document.getElementById("fragment-field");
   var fragmentZone = document.querySelector(".fragment-zone");
 
-  function shuffle(arr) {
-    for (var j = arr.length - 1; j > 0; j--) {
-      var k = Math.floor(Math.random() * (j + 1));
-      var tmp = arr[j];
-      arr[j] = arr[k];
-      arr[k] = tmp;
-    }
-    return arr;
+  // Every fragment makes one continuous run the full length of the zone
+  // (hero through Live) - always starting fresh above the hero and
+  // fading in as it enters, never skipping ahead into a random midpoint
+  // (which is what caused fragments to visibly pop into existence
+  // partway down the page). --fall-scale stretches the original
+  // one-screen fall shape to cover that whole distance; the duration
+  // below is tuned independently of the scale (not simply multiplied by
+  // it) so the pace stays brisk rather than turning into a multi-minute
+  // crawl, keeping the lower sections populated soon after load.
+  var fallScale = 1;
+  function updateFallScale() {
+    fallScale = Math.max(fragmentZone.offsetHeight / window.innerHeight, 1);
+    field.style.setProperty("--fall-scale", fallScale);
   }
-
-  // Rather than stretching one long journey across the whole page (which
-  // either made fragments crawl for minutes or made them fade in/out at
-  // random midway points instead of visibly entering from above), the
-  // zone is split into screen-height "bands" and each fragment is
-  // permanently assigned to one. Within its own band it falls the same
-  // short, fast, well-tested distance the hero always used - fading in
-  // just above its band and melting/respawning at its band's bottom -
-  // so every band keeps its own steady, even snowfall going forever, and
-  // the many bands together cover the full hero-through-Live height.
-  // --vh-px (updated on resize) converts a band index into a pixel
-  // offset so the CSS keyframes can add it to the local fall position.
-  function updateVhPx() {
-    field.style.setProperty("--vh-px", window.innerHeight + "px");
-  }
-  updateVhPx();
-  window.addEventListener("resize", updateVhPx);
-  window.addEventListener("load", updateVhPx);
-
-  var BAND_COUNT = Math.max(Math.round(fragmentZone.offsetHeight / window.innerHeight), 1);
+  updateFallScale();
+  window.addEventListener("resize", updateFallScale);
+  window.addEventListener("load", updateFallScale);
 
   function randomFragmentSrc() {
     var num = Math.floor(Math.random() * FRAGMENT_IMAGE_COUNT) + 1;
@@ -99,17 +87,24 @@
   // clustering wherever independent random draws happen to land.
   var LANE_WIDTH = 100 / FRAGMENT_COUNT;
 
-  // On first load, a handful of lanes start with delay 0 - so motion is
-  // visible the instant the page opens instead of only "eventually" - and
-  // the rest join in over a short ramp, instead of everything appearing
-  // at once.
-  var IMMEDIATE_LANE_COUNT = Math.round(FRAGMENT_COUNT / BAND_COUNT);
-  var INITIAL_RAMP_SECONDS = 2;
-  // Respawns get a wide, uniform-random gap. A narrow range here made every
-  // fragment's cycle (duration + gap) land in a similar range, so after the
-  // initial ramp they gradually drifted back into sync and thinned out /
-  // clumped together at the same time instead of falling continuously.
-  var RESPAWN_GAP_MAX_SECONDS = 14;
+  // A handful start with delay 0 for instant motion, and the rest trickle
+  // in over a ramp as long as the fall itself. A short ramp bunched
+  // everyone into one wave: they all passed the hero/News area together
+  // and then, since a respawn can't happen until that fragment's own
+  // (long) fall finishes, left a real gap behind them with nothing new
+  // entering at the top until the first wave started cycling back - a
+  // visible "empty stretch" sweeping down the page. A ramp on the same
+  // order as the fall duration keeps a steady trickle entering from
+  // above the hero the whole time, so the first respawns take over
+  // right as the ramp tapers off instead of after a gap.
+  var IMMEDIATE_LANE_COUNT = 10;
+  var INITIAL_RAMP_SECONDS = 45;
+  // Respawns get a wide, uniform-random gap, and duration itself is also
+  // widely spread. Both matter for the same reason: if every fragment's
+  // full cycle (duration + gap) landed in a similar range, the whole
+  // fleet would drift back into sync and thin out / clump together at
+  // the same time instead of falling at a steady, even rate forever.
+  var RESPAWN_GAP_MAX_SECONDS = 6;
 
   function randomize(el, initial, laneIndex, immediate) {
     el.src = randomFragmentSrc();
@@ -120,12 +115,7 @@
     el.style.setProperty("--drift", (Math.random() * 60 + 20) + "px");
     el.style.setProperty("--rot-from", (Math.random() * 40 - 20) + "deg");
     el.style.setProperty("--rot-to", (Math.random() * 280 + 40) + "deg");
-    // Wide duration spread (not just a wide gap) matters: with everyone
-    // starting within the first ~6s, a narrow duration range made the
-    // whole fleet land its *first* fall within a similar few-second
-    // window too, so they all needed to respawn again around the same
-    // time - a synchronized dip in count every ~20s, not a steady rate.
-    var duration = Math.random() * 28 + 12;
+    var duration = Math.random() * 25 + 25;
     var delay = immediate
       ? 0
       : initial
@@ -156,12 +146,11 @@
     el.classList.add("melting");
   }
 
-  function createFragment(laneIndex, bandIndex, immediate) {
+  function createFragment(laneIndex, immediate) {
     var el = document.createElement("img");
     el.className = "fragment";
     el.alt = "";
     el.draggable = false;
-    el.style.setProperty("--band-index", bandIndex);
     randomize(el, true, laneIndex, immediate);
 
     el.addEventListener("animationend", function () {
@@ -175,20 +164,17 @@
   }
 
   // Shuffle lane indices so the initial fall order doesn't visibly sweep
-  // left-to-right on page load, and independently shuffle a band for
-  // each fragment so every band gets a roughly even, decorrelated share.
-  var lanes = shuffle((function () {
-    var arr = [];
-    for (var i = 0; i < FRAGMENT_COUNT; i++) arr.push(i);
-    return arr;
-  })());
-  var bands = shuffle((function () {
-    var arr = [];
-    for (var i = 0; i < FRAGMENT_COUNT; i++) arr.push(i % BAND_COUNT);
-    return arr;
-  })());
+  // left-to-right on page load.
+  var lanes = [];
+  for (var i = 0; i < FRAGMENT_COUNT; i++) lanes.push(i);
+  for (var j = lanes.length - 1; j > 0; j--) {
+    var k = Math.floor(Math.random() * (j + 1));
+    var tmp = lanes[j];
+    lanes[j] = lanes[k];
+    lanes[k] = tmp;
+  }
   lanes.forEach(function (laneIndex, i) {
-    createFragment(laneIndex, bands[i], i < IMMEDIATE_LANE_COUNT);
+    createFragment(laneIndex, i < IMMEDIATE_LANE_COUNT);
   });
 
   // A plain "mouseenter" listener only fires on actual pointer movement, so

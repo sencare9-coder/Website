@@ -809,14 +809,16 @@ ul {
 }
 
 .live-date,
-.live-venue {
+.live-venue,
+.live-title {
   font-size: 14px;
   color: var(--ink);
 }
 
 @media (min-width: 768px) {
   .live-date,
-  .live-venue {
+  .live-venue,
+  .live-title {
     font-size: 16px;
   }
 }
@@ -831,14 +833,6 @@ ul {
 
 .live-title {
   margin: 0;
-  font-size: 14px;
-  color: var(--muted);
-}
-
-@media (min-width: 768px) {
-  .live-title {
-    font-size: 16px;
-  }
 }
 
 .live-line2,

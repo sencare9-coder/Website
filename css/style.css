@@ -472,6 +472,13 @@ ul {
   letter-spacing: 0.3em;
   color: var(--muted);
   width: fit-content;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .tag {
+    width: 104px;
+  }
 }
 
 .news-title {
@@ -905,6 +912,10 @@ ul {
 
 .social-list a:hover {
   color: var(--ink);
+}
+
+.social-list-center {
+  justify-content: center;
 }
 
 /* ---------- Footer ---------- */

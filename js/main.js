@@ -226,4 +226,14 @@
   document.getElementById("carousel-next").addEventListener("click", function () {
     carousel.scrollBy({ left: carousel.clientWidth * 0.9, behavior: "smooth" });
   });
+
+  /* ---------- About photo carousel ---------- */
+
+  var aboutCarousel = document.getElementById("about-carousel");
+  document.getElementById("about-carousel-prev").addEventListener("click", function () {
+    aboutCarousel.scrollBy({ left: -aboutCarousel.clientWidth * 0.9, behavior: "smooth" });
+  });
+  document.getElementById("about-carousel-next").addEventListener("click", function () {
+    aboutCarousel.scrollBy({ left: aboutCarousel.clientWidth * 0.9, behavior: "smooth" });
+  });
 })();

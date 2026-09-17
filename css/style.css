@@ -846,10 +846,11 @@ ul {
 /* ---------- Contact ---------- */
 
 .contact-cta {
-  display: inline-flex;
+  display: flex;
+  width: fit-content;
   align-items: center;
   gap: 12px;
-  margin-bottom: 16px;
+  margin: 0 auto 16px;
   padding-bottom: 8px;
   border-bottom: 1px solid var(--line);
   font-size: 22px;

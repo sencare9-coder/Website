@@ -1,6 +1,11 @@
 (function () {
   "use strict";
 
+  // Belt-and-suspenders alongside the scrollRestoration override in
+  // <head>: force the very top on every load/reload regardless of
+  // whatever scroll position the browser tried to bring back.
+  window.scrollTo(0, 0);
+
   document.getElementById("year").textContent = new Date().getFullYear();
 
   /* ---------- Header scroll state ---------- */
@@ -48,7 +53,7 @@
   /* ---------- Falling fragments ---------- */
 
   var FRAGMENT_IMAGE_COUNT = 103;
-  var FRAGMENT_COUNT = 86; // 43 * 2
+  var FRAGMENT_COUNT = 172; // 86 * 2
   var field = document.getElementById("fragment-field");
   var fragmentZone = document.querySelector(".fragment-zone");
 

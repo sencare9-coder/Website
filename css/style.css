@@ -522,7 +522,7 @@ ul {
 
 .about-name,
 .statement {
-  font-size: 18px;
+  font-size: 14px;
   line-height: 1.8;
   color: rgba(245, 245, 243, 0.9);
   margin: 0;
@@ -531,7 +531,7 @@ ul {
 @media (min-width: 768px) {
   .about-name,
   .statement {
-    font-size: 20px;
+    font-size: 16px;
   }
 }
 

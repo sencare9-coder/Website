@@ -992,3 +992,16 @@ a.news-title:hover {
   color: var(--muted);
   margin: 0;
 }
+
+.footer-credits {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+@media (min-width: 768px) {
+  .footer-credits {
+    align-items: flex-end;
+  }
+}

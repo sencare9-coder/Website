@@ -349,14 +349,16 @@ ul {
 
 /* A flat black page reads as boring past the hero, so each section gets
    one of the watercolor background photos, dimmed enough to stay behind
-   the text. */
+   the text. Each one also fades its photo to solid --bg at the top/bottom
+   edge, so the seam between sections is a soft blend into a shared black
+   band instead of a hard cut from one photo to the next. */
 #news {
-  background-image: linear-gradient(rgba(11, 11, 11, 0.4), rgba(11, 11, 11, 0.4)), url("../images/gallery/background-5-2.jpg");
+  background-image:
+    linear-gradient(to bottom, var(--bg) 0%, transparent 12%, transparent 88%, var(--bg) 100%),
+    linear-gradient(rgba(11, 11, 11, 0.4), rgba(11, 11, 11, 0.4)),
+    url("../images/gallery/background-5-2.jpg");
 }
 
-/* About, Works, Music and Live each fade their photo to solid --bg at
-   the top/bottom edge, so the seam between them is a soft blend into a
-   shared black band instead of a hard cut from one photo to the next. */
 #about {
   /* Cropped to just the watercolor gradient (the source photo's bottom
      ~20% is a solid "ground" band). */
@@ -390,7 +392,10 @@ ul {
 }
 
 #contact {
-  background-image: linear-gradient(rgba(11, 11, 11, 0.4), rgba(11, 11, 11, 0.4)), url("../images/gallery/background-5-1.jpg");
+  background-image:
+    linear-gradient(to bottom, var(--bg) 0%, transparent 12%, transparent 88%, var(--bg) 100%),
+    linear-gradient(rgba(11, 11, 11, 0.4), rgba(11, 11, 11, 0.4)),
+    url("../images/gallery/background-5-1.jpg");
 }
 
 @media (min-width: 768px) {

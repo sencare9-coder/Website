@@ -193,12 +193,18 @@
     el.classList.add("melting");
   }
 
+  // Tracked so the whole field can be resynced in one shot when the tab
+  // comes back from being hidden (see below) instead of relying on each
+  // fragment's own animationend to fire naturally.
+  var allFragments = [];
+
   function createFragment(laneIndex, immediate) {
     var el = document.createElement("img");
     el.className = "fragment";
     el.alt = "";
     el.draggable = false;
     randomize(el, true, laneIndex, immediate);
+    allFragments.push({ el: el, laneIndex: laneIndex });
 
     el.addEventListener("animationend", function () {
       respawn(el, laneIndex);
@@ -222,6 +228,32 @@
   }
   lanes.forEach(function (laneIndex, i) {
     createFragment(laneIndex, i < IMMEDIATE_LANE_COUNT);
+  });
+
+  // While a tab is hidden, browsers stop painting it, so the fall visibly
+  // freezes - and CSS animations keep advancing on the clock underneath,
+  // so every fragment's animationend for the time spent away fires in one
+  // burst the instant the tab is shown again, dumping a wave of restarts
+  // all at once. Re-seeding everyone the same way the initial page load
+  // does (real-time-anchored, so it reads as already having been falling)
+  // the moment the tab becomes visible again replaces that backlog with an
+  // immediate, evenly-spread snapshot of where the fall should be right now.
+  function resyncAllFragments() {
+    allFragments.forEach(function (f) {
+      if (f.el.classList.contains("melting")) return;
+      f.el.classList.remove("fall");
+      f.el.style.removeProperty("translate");
+      f.el.style.removeProperty("rotate");
+      randomize(f.el, true, f.laneIndex, false);
+      void f.el.offsetWidth;
+      f.el.classList.add("fall");
+    });
+  }
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "visible") resyncAllFragments();
+  });
+  window.addEventListener("pageshow", function (e) {
+    if (e.persisted) resyncAllFragments();
   });
 
   // A plain "mouseenter" listener only fires on actual pointer movement, so

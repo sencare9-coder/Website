@@ -350,19 +350,15 @@ ul {
 }
 
 /* A flat black page reads as boring past the hero, so each section gets
-   one of the watercolor background photos, shown at full brightness. Each
-   one fades its photo to solid --bg at the top/bottom edge, so the seam
-   between sections is a soft blend into a shared black band instead of a
-   hard cut from one photo to the next. */
-/* News, About, Works, Music and Live all share the same uniform
-   "ground" crop of background-3.jpg (no fade layer needed) so they
-   read as one continuous backdrop instead of separate photos. */
+   a watercolor background photo. News, About, Works, Music and Live all
+   share the same image (no fade layer needed) so they read as one
+   continuous backdrop instead of separate photos. */
 #news,
 #about,
 #works,
 #music,
 #live {
-  background-image: url("../images/gallery/background-3-ground.jpg");
+  background-image: url("../images/gallery/background-6.jpg");
 }
 
 #contact {

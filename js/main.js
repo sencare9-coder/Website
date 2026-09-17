@@ -48,7 +48,7 @@
   /* ---------- Falling fragments ---------- */
 
   var FRAGMENT_IMAGE_COUNT = 103;
-  var FRAGMENT_COUNT = 36;
+  var FRAGMENT_COUNT = 43; // 36 * 1.2, rounded
   var field = document.getElementById("fragment-field");
   var fragmentZone = document.querySelector(".fragment-zone");
 
@@ -73,24 +73,18 @@
   }
 
   // Each fragment keeps a fixed horizontal "lane" for its whole lifetime
-  // (across respawns) and only jitters within that lane, so the 36
+  // (across respawns) and only jitters within that lane, so the
   // fragments stay spread evenly across the full width instead of
   // clustering wherever independent random draws happen to land.
   var LANE_WIDTH = 100 / FRAGMENT_COUNT;
 
-  // On first load, a handful of lanes start with delay 0 - so motion is
-  // visible the instant the page opens instead of only "eventually" - and
-  // the rest join in over a short ramp, instead of everything appearing
-  // at once.
-  var IMMEDIATE_LANE_COUNT = 8;
-  var INITIAL_RAMP_SECONDS = 2;
   // Respawns get a wide, uniform-random gap. A narrow range here made every
   // fragment's cycle (duration + gap) land in a similar range, so after the
   // initial ramp they gradually drifted back into sync and thinned out /
   // clumped together at the same time instead of falling continuously.
   var RESPAWN_GAP_MAX_SECONDS = 14;
 
-  function randomize(el, initial, laneIndex, immediate) {
+  function randomize(el, initial, laneIndex) {
     el.src = randomFragmentSrc();
     var laneStart = laneIndex * LANE_WIDTH;
     var jitter = Math.random() * (LANE_WIDTH * 0.8) + LANE_WIDTH * 0.1;
@@ -105,11 +99,18 @@
     // window too, so they all needed to respawn again around the same
     // time - a synchronized dip in count every ~20s, not a steady rate.
     var duration = (Math.random() * 28 + 12) * fallScale;
-    var delay = immediate
-      ? 0
-      : initial
-      ? Math.random() * INITIAL_RAMP_SECONDS
-      : Math.random() * RESPAWN_GAP_MAX_SECONDS;
+    var delay;
+    if (initial) {
+      // A zero/small delay would start every fragment at the very top of
+      // the (now much taller) zone, so the lower sections would sit
+      // empty until the first fragments had spent real minutes falling
+      // that far down. A negative delay instead starts each one already
+      // partway - anywhere from just beginning to nearly done - so the
+      // whole zone is populated with fragments the instant the page loads.
+      delay = -Math.random() * duration;
+    } else {
+      delay = Math.random() * RESPAWN_GAP_MAX_SECONDS;
+    }
     el.style.animationDuration = duration + "s";
     el.style.animationDelay = delay + "s";
   }
@@ -135,12 +136,12 @@
     el.classList.add("melting");
   }
 
-  function createFragment(laneIndex, immediate) {
+  function createFragment(laneIndex) {
     var el = document.createElement("img");
     el.className = "fragment";
     el.alt = "";
     el.draggable = false;
-    randomize(el, true, laneIndex, immediate);
+    randomize(el, true, laneIndex);
 
     el.addEventListener("animationend", function () {
       respawn(el, laneIndex);
@@ -162,8 +163,8 @@
     lanes[j] = lanes[k];
     lanes[k] = tmp;
   }
-  lanes.forEach(function (laneIndex, i) {
-    createFragment(laneIndex, i < IMMEDIATE_LANE_COUNT);
+  lanes.forEach(function (laneIndex) {
+    createFragment(laneIndex);
   });
 
   // A plain "mouseenter" listener only fires on actual pointer movement, so

@@ -67,9 +67,33 @@
   // it) so the pace stays brisk rather than turning into a multi-minute
   // crawl, keeping the lower sections populated soon after load.
   var fallScale = 1;
+  // Fraction-of-duration -> unscaled vh position, matching the
+  // fragment-fall keyframes (0%,30%,60%,100% -> -20,15,55,120 vh).
+  function unscaledVhAt(fraction) {
+    if (fraction <= 0.3) return -20 + 35 * (fraction / 0.3);
+    if (fraction <= 0.6) return 15 + 40 * ((fraction - 0.3) / 0.3);
+    return 55 + 65 * ((fraction - 0.6) / 0.4);
+  }
+  // Inverse of the above: the fraction at which the curve first reaches
+  // a given unscaled vh position.
+  function fractionAtUnscaledVh(vh) {
+    if (vh <= 15) return (0.3 * (vh + 20)) / 35;
+    if (vh <= 55) return 0.3 + (0.3 * (vh - 15)) / 40;
+    return 0.6 + (0.4 * (vh - 55)) / 65;
+  }
+  // The span of the cycle (as a 0-1 fraction) during which a fragment's
+  // scaled position sits inside the hero's own viewport height - the
+  // one stretch of the whole fall that's visible the instant the page
+  // loads, before any scrolling. Used below to keep every fragment that
+  // would otherwise start already inside that window looking freshly
+  // spawned (fading in above the hero) rather than popping in mid-fall.
+  var heroFracStart = 0;
+  var heroFracEnd = 0;
   function updateFallScale() {
     fallScale = Math.max(fragmentZone.offsetHeight / window.innerHeight, 1);
     field.style.setProperty("--fall-scale", fallScale);
+    heroFracStart = fractionAtUnscaledVh(0);
+    heroFracEnd = fractionAtUnscaledVh(100 / fallScale);
   }
   updateFallScale();
   window.addEventListener("resize", updateFallScale);
@@ -87,8 +111,11 @@
   // clustering wherever independent random draws happen to land.
   var LANE_WIDTH = 100 / FRAGMENT_COUNT;
 
-  // A handful start with delay 0 for instant motion, and the rest trickle
-  // in over a ramp as long as the fall itself. A short ramp bunched
+  // A handful start with delay 0 for instant motion, and some trickle in
+  // over a ramp as long as the fall itself - both only matter for
+  // whichever fragments land inside the hero's own visible window (see
+  // heroFracStart/heroFracEnd), so that stretch always shows a proper
+  // fade-in instead of a mid-fall pop. A short ramp used to bunch
   // everyone into one wave: they all passed the hero/News area together
   // and then, since a respawn can't happen until that fragment's own
   // (long) fall finishes, left a real gap behind them with nothing new
@@ -115,12 +142,32 @@
     el.style.setProperty("--drift", (Math.random() * 60 + 20) + "px");
     el.style.setProperty("--rot-from", (Math.random() * 40 - 20) + "deg");
     el.style.setProperty("--rot-to", (Math.random() * 280 + 40) + "deg");
-    var duration = Math.random() * 25 + 25;
-    var delay = immediate
-      ? 0
-      : initial
-      ? Math.random() * INITIAL_RAMP_SECONDS
-      : Math.random() * RESPAWN_GAP_MAX_SECONDS;
+    var duration = Math.random() * 30 + 35;
+    var delay;
+    if (!initial) {
+      delay = Math.random() * RESPAWN_GAP_MAX_SECONDS;
+    } else {
+      // Anchoring to the real clock (rather than a fresh Math.random()
+      // draw) makes the fall read as something already continuously in
+      // progress that the page happens to join, instead of visibly
+      // starting from scratch the moment the site is opened - but only
+      // where that's invisible anyway: if the resulting phase would
+      // currently sit inside the hero's own viewport (the one stretch
+      // visible from the very first frame), fall back to the ordinary
+      // fresh-start ramp so the hero still always shows a proper
+      // fade-in instead of a fragment popping in mid-fall.
+      var phaseOffset = Math.random() * duration;
+      var cyclePos = ((Date.now() / 1000) + phaseOffset) % duration;
+      var fraction = cyclePos / duration;
+      var inHeroWindow = fraction >= heroFracStart && fraction <= heroFracEnd;
+      if (immediate) {
+        delay = 0;
+      } else if (inHeroWindow) {
+        delay = Math.random() * INITIAL_RAMP_SECONDS;
+      } else {
+        delay = -cyclePos;
+      }
+    }
     el.style.animationDuration = duration + "s";
     el.style.animationDelay = delay + "s";
   }

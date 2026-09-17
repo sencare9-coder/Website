@@ -99,6 +99,12 @@ ul {
   font-size: 20px;
 }
 
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
 .nav-desktop {
   display: none;
   gap: 32px;
@@ -123,6 +129,22 @@ ul {
   .nav-toggle {
     display: none;
   }
+}
+
+.header-social {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-social a {
+  display: flex;
+  color: var(--muted);
+  transition: color 0.2s ease;
+}
+
+.header-social a:hover {
+  color: var(--ink);
 }
 
 .nav-toggle {
@@ -352,6 +374,9 @@ ul {
   background-image: linear-gradient(rgba(11, 11, 11, 0.85), rgba(11, 11, 11, 0.85)), url("../images/gallery/background-4.jpg");
 }
 
+#contact {
+  background-image: linear-gradient(rgba(11, 11, 11, 0.85), rgba(11, 11, 11, 0.85)), url("../images/gallery/background-5-1.jpg");
+}
 
 @media (min-width: 768px) {
   .section {
@@ -561,65 +586,68 @@ ul {
 
 .works-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  grid-template-columns: 1fr;
+  gap: 48px;
 }
 
 @media (min-width: 768px) {
   .works-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 24px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
   }
 }
 
-.work-card {
-  position: relative;
+.work-image {
   aspect-ratio: 1 / 1;
   overflow: hidden;
   background: var(--surface);
 }
 
-.work-card img {
+.work-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform 0.7s ease;
 }
 
-.work-card:hover img {
-  transform: scale(1.1);
+.work-card:hover .work-image img {
+  transform: scale(1.08);
 }
 
-.work-info {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 16px;
-  background: linear-gradient(to top, rgba(11, 11, 11, 0.9), transparent 70%);
-  opacity: 0;
-  transition: opacity 0.5s ease;
-}
-
-.work-card:hover .work-info {
-  opacity: 1;
+.work-details {
+  padding-top: 20px;
 }
 
 .work-meta {
   margin: 0 0 4px;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.3em;
+  font-size: 12px;
   color: var(--muted);
 }
 
 .work-title {
+  margin: 0 0 12px;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 22px;
+}
+
+.track-list {
   margin: 0;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: -0.04em;
-  font-size: 18px;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+
+.track-list li {
+  padding: 8px 0;
+  font-size: 13px;
+  color: var(--muted);
+  border-bottom: 1px solid var(--line);
+}
+
+.track-list li::before {
+  content: counter(list-item) ". ";
+  color: var(--ink);
 }
 
 /* ---------- Music carousel ---------- */

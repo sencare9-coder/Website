@@ -352,7 +352,7 @@ ul {
    one of the watercolor background photos, dimmed enough to stay behind
    the text. */
 #news {
-  background-image: linear-gradient(rgba(11, 11, 11, 0.85), rgba(11, 11, 11, 0.85)), url("../images/gallery/background-1-sky.jpg");
+  background-image: linear-gradient(rgba(11, 11, 11, 0.6), rgba(11, 11, 11, 0.6)), url("../images/gallery/background-1-sky.jpg");
 }
 
 #about {
@@ -362,20 +362,20 @@ ul {
      seam with the sections above/below is soft, not a hard cut. */
   background-image:
     linear-gradient(to bottom, var(--bg) 0%, transparent 12%, transparent 88%, var(--bg) 100%),
-    linear-gradient(rgba(11, 11, 11, 0.85), rgba(11, 11, 11, 0.85)),
+    linear-gradient(rgba(11, 11, 11, 0.6), rgba(11, 11, 11, 0.6)),
     url("../images/gallery/background-2-sky.jpg");
 }
 
 #music {
-  background-image: linear-gradient(rgba(11, 11, 11, 0.85), rgba(11, 11, 11, 0.85)), url("../images/gallery/background-3.jpg");
+  background-image: linear-gradient(rgba(11, 11, 11, 0.6), rgba(11, 11, 11, 0.6)), url("../images/gallery/background-3.jpg");
 }
 
 #live {
-  background-image: linear-gradient(rgba(11, 11, 11, 0.85), rgba(11, 11, 11, 0.85)), url("../images/gallery/background-4.jpg");
+  background-image: linear-gradient(rgba(11, 11, 11, 0.6), rgba(11, 11, 11, 0.6)), url("../images/gallery/background-4.jpg");
 }
 
 #contact {
-  background-image: linear-gradient(rgba(11, 11, 11, 0.85), rgba(11, 11, 11, 0.85)), url("../images/gallery/background-5-1.jpg");
+  background-image: linear-gradient(rgba(11, 11, 11, 0.6), rgba(11, 11, 11, 0.6)), url("../images/gallery/background-5-1.jpg");
 }
 
 @media (min-width: 768px) {

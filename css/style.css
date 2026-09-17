@@ -1,9 +1,9 @@
 :root {
   --bg: #0b0b0b;
   --surface: #121212;
-  --ink: #f5f5f3;
-  --muted: #b3b3ae;
-  --line: #2a2a2a;
+  --ink: #ffffff;
+  --muted: #ffffff;
+  --line: #ffffff;
   --font-sans: "Helvetica Neue", Arial, "Hiragino Sans", "Noto Sans JP", sans-serif;
   --font-display: "Josefin Sans", var(--font-sans);
 }
@@ -348,14 +348,13 @@ ul {
 }
 
 /* A flat black page reads as boring past the hero, so each section gets
-   one of the watercolor background photos, dimmed enough to stay behind
-   the text. Each one also fades its photo to solid --bg at the top/bottom
-   edge, so the seam between sections is a soft blend into a shared black
-   band instead of a hard cut from one photo to the next. */
+   one of the watercolor background photos, shown at full brightness. Each
+   one fades its photo to solid --bg at the top/bottom edge, so the seam
+   between sections is a soft blend into a shared black band instead of a
+   hard cut from one photo to the next. */
 #news {
   background-image:
     linear-gradient(to bottom, var(--bg) 0%, transparent 12%, transparent 88%, var(--bg) 100%),
-    linear-gradient(rgba(11, 11, 11, 0.4), rgba(11, 11, 11, 0.4)),
     url("../images/gallery/background-5-2.jpg");
 }
 
@@ -364,21 +363,18 @@ ul {
      ~20% is a solid "ground" band). */
   background-image:
     linear-gradient(to bottom, var(--bg) 0%, transparent 12%, transparent 88%, var(--bg) 100%),
-    linear-gradient(rgba(11, 11, 11, 0.4), rgba(11, 11, 11, 0.4)),
     url("../images/gallery/background-1-sky.jpg");
 }
 
 #works {
   background-image:
     linear-gradient(to bottom, var(--bg) 0%, transparent 12%, transparent 88%, var(--bg) 100%),
-    linear-gradient(rgba(11, 11, 11, 0.4), rgba(11, 11, 11, 0.4)),
     url("../images/gallery/background-4.jpg");
 }
 
 #music {
   background-image:
     linear-gradient(to bottom, var(--bg) 0%, transparent 12%, transparent 88%, var(--bg) 100%),
-    linear-gradient(rgba(11, 11, 11, 0.4), rgba(11, 11, 11, 0.4)),
     url("../images/gallery/background-3.jpg");
 }
 
@@ -387,14 +383,12 @@ ul {
      photo's bottom ~20% is a solid "ground" band). */
   background-image:
     linear-gradient(to bottom, var(--bg) 0%, transparent 12%, transparent 88%, var(--bg) 100%),
-    linear-gradient(rgba(11, 11, 11, 0.4), rgba(11, 11, 11, 0.4)),
     url("../images/gallery/background-2-sky.jpg");
 }
 
 #contact {
   background-image:
     linear-gradient(to bottom, var(--bg) 0%, transparent 12%, transparent 88%, var(--bg) 100%),
-    linear-gradient(rgba(11, 11, 11, 0.4), rgba(11, 11, 11, 0.4)),
     url("../images/gallery/background-5-1.jpg");
 }
 
@@ -556,7 +550,7 @@ a.news-title:hover {
 .statement {
   font-size: 14px;
   line-height: 1.8;
-  color: rgba(245, 245, 243, 0.9);
+  color: var(--ink);
   margin: 0;
 }
 
@@ -815,7 +809,7 @@ a.news-title:hover {
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  border: 1px solid rgba(245, 245, 243, 0.7);
+  border: 1px solid var(--line);
   background: rgba(11, 11, 11, 0.6);
   display: flex;
   align-items: center;

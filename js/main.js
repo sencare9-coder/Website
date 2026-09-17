@@ -93,17 +93,22 @@
     // respawn again around the same time - a synchronized dip in count,
     // not a steady rate.
     var duration = (Math.random() * 28 + 12) * fallScale;
-    // A respawn that always restarts at the literal top would, over the
+    // The delay is derived from the real clock (plus a random per-call
+    // offset) rather than from a fresh Math.random() draw, so the page
+    // load itself isn't treated as "the moment the snow started" - two
+    // loads/reloads a few seconds apart land at positions a few seconds
+    // apart too, like catching an already-falling snow a little later,
+    // instead of the fall visibly restarting from scratch every time the
+    // site is opened. This also doubles as the fix for respawns: a
+    // respawn that always restarted at the literal top would, over the
     // long (zone-spanning) durations here, gradually drain every
-    // fragment down and out of the upper sections - each one only
-    // returns to the top after its own multi-minute fall completes, so
-    // whatever section the user scrolls back to can sit empty for a
-    // long stretch. A negative delay instead re-seeds every respawn to a
-    // random point anywhere in the whole zone, exactly like the initial
-    // placement, so the fall never "runs dry" in any one spot over time.
-    var delay = -Math.random() * duration;
+    // fragment out of the upper sections until its own multi-minute
+    // cycle finished, so this re-seeds every respawn to a random point
+    // anywhere in the whole zone too, and the fall never "runs dry".
+    var phaseOffset = Math.random() * duration;
+    var elapsedInCycle = ((Date.now() / 1000) + phaseOffset) % duration;
     el.style.animationDuration = duration + "s";
-    el.style.animationDelay = delay + "s";
+    el.style.animationDelay = -elapsedInCycle + "s";
   }
 
   function respawn(el, laneIndex) {

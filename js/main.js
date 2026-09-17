@@ -50,6 +50,21 @@
   var FRAGMENT_IMAGE_COUNT = 103;
   var FRAGMENT_COUNT = 36;
   var field = document.getElementById("fragment-field");
+  var fragmentZone = document.querySelector(".fragment-zone");
+
+  // The fall keyframes are authored for one screen height (hero-sized).
+  // --fall-scale stretches that same shape to cover the whole zone
+  // (hero through Live), so fragments born near the top of the page
+  // are still falling by the time that scroll position reaches Live's
+  // bottom edge, where the zone's overflow:hidden clips them away.
+  var fallScale = 1;
+  function updateFallScale() {
+    fallScale = Math.max(fragmentZone.offsetHeight / window.innerHeight, 1);
+    field.style.setProperty("--fall-scale", fallScale);
+  }
+  updateFallScale();
+  window.addEventListener("resize", updateFallScale);
+  window.addEventListener("load", updateFallScale);
 
   function randomFragmentSrc() {
     var num = Math.floor(Math.random() * FRAGMENT_IMAGE_COUNT) + 1;
@@ -89,7 +104,7 @@
     // whole fleet land its *first* fall within a similar few-second
     // window too, so they all needed to respawn again around the same
     // time - a synchronized dip in count every ~20s, not a steady rate.
-    var duration = Math.random() * 28 + 12;
+    var duration = (Math.random() * 28 + 12) * fallScale;
     var delay = immediate
       ? 0
       : initial
@@ -192,19 +207,6 @@
     requestAnimationFrame(pollFragmentHover);
   }
   requestAnimationFrame(pollFragmentHover);
-
-  // The fragment field is fixed to the viewport so it drifts over every
-  // section from the hero through Live, then fades out once Live has
-  // scrolled past so it doesn't linger over Contact.
-  var liveSection = document.getElementById("live");
-  function updateFragmentFieldVisibility() {
-    var liveBottom = liveSection.offsetTop + liveSection.offsetHeight;
-    var viewportBottom = window.scrollY + window.innerHeight;
-    field.style.opacity = viewportBottom < liveBottom ? "1" : "0";
-  }
-  window.addEventListener("scroll", updateFragmentFieldVisibility, { passive: true });
-  window.addEventListener("resize", updateFragmentFieldVisibility);
-  updateFragmentFieldVisibility();
 
   /* ---------- Music carousel ---------- */
 

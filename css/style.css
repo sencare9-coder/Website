@@ -210,17 +210,20 @@ ul {
   pointer-events: none;
 }
 
-/* Fixed to the viewport (not the hero) so the same falling fragments
-   keep drifting over News/About/Works/Music/Live as the page scrolls,
-   instead of stopping at the bottom of the hero. JS fades it out once
-   the Live section has scrolled past. */
+/* Spans the hero through Live (see .fragment-zone) so the same falling
+   fragments drift down across all of those sections at their actual
+   position on the page, then are clipped away at Live's bottom edge,
+   instead of stopping at the bottom of the hero alone. */
+.fragment-zone {
+  position: relative;
+}
+
 .fragment-field {
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 20;
   overflow: hidden;
   pointer-events: none;
-  transition: opacity 0.4s ease;
 }
 
 .hero-content {
@@ -325,13 +328,15 @@ ul {
 
 /* translate/rotate/scale are animated as separate properties (not the
    combined `transform` shorthand) so melting can scale a fragment in
-   place without resetting its fall position/rotation. */
+   place without resetting its fall position/rotation. --fall-scale
+   (set in JS from the fragment zone's actual height) stretches the
+   original one-screen fall distance to cover the whole zone. */
 @keyframes fragment-fall {
-  0%   { translate: 0 -20vh; rotate: var(--rot-from); opacity: 0; }
+  0%   { translate: 0 calc(-20vh * var(--fall-scale, 1)); rotate: var(--rot-from); opacity: 0; }
   6%   { opacity: 0.9; }
-  30%  { translate: var(--drift) 15vh; rotate: var(--rot-to); }
-  60%  { translate: calc(var(--drift) * -0.7) 55vh; opacity: 0.9; }
-  100% { translate: calc(var(--drift) * 0.3) 120vh; opacity: 0.85; }
+  30%  { translate: var(--drift) calc(15vh * var(--fall-scale, 1)); rotate: var(--rot-to); }
+  60%  { translate: calc(var(--drift) * -0.7) calc(55vh * var(--fall-scale, 1)); opacity: 0.9; }
+  100% { translate: calc(var(--drift) * 0.3) calc(120vh * var(--fall-scale, 1)); opacity: 0.85; }
 }
 
 /* Melts like snow: stays full size and just fades away quickly, rather
@@ -354,7 +359,7 @@ ul {
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
 }
 
-/* The fixed fragment-field (z-index 20) drifts over these sections'
+/* The fragment-field (z-index 20) drifts over these sections'
    backgrounds, so their actual content needs to sit above it. */
 #news > .wrap,
 #about > .wrap,

@@ -548,6 +548,14 @@ a.news-title:hover {
 }
 
 .about-name,
+.statement-lead {
+  font-size: 22px;
+  line-height: 1.5;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0;
+}
+
 .statement {
   font-size: 14px;
   line-height: 1.8;
@@ -559,6 +567,10 @@ a.news-title:hover {
   .about-name,
   .statement {
     font-size: 16px;
+  }
+
+  .statement-lead {
+    font-size: 28px;
   }
 }
 

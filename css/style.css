@@ -627,14 +627,14 @@ a.news-title:hover {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 10px 0;
+  padding: 5px 0;
 }
 
 @media (min-width: 768px) {
   .history-list li {
     flex-direction: row;
     gap: 32px;
-    padding: 11px 0;
+    padding: 5px 0;
   }
 }
 

@@ -5,7 +5,7 @@
   --muted: #ffffff;
   --line: #ffffff;
   --font-sans: "Helvetica Neue", Arial, "Hiragino Sans", "Noto Sans JP", sans-serif;
-  --font-display: "Josefin Sans", var(--font-sans);
+  --font-display: "Julius Sans One", var(--font-sans);
 }
 
 * {
@@ -93,8 +93,8 @@ ul {
 
 .logo {
   font-family: var(--font-display);
-  font-weight: 500;
-  letter-spacing: 0.02em;
+  font-weight: 400;
+  letter-spacing: 0.03em;
   font-size: 20px;
 }
 
@@ -245,7 +245,7 @@ ul {
 .hero-title {
   font-family: var(--font-display);
   font-weight: 400;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.03em;
   line-height: 0.95;
   font-size: 11vw;
   margin: 0;
@@ -451,9 +451,9 @@ ul {
 .title {
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 500;
+  font-weight: 400;
   text-transform: uppercase;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
   line-height: 0.9;
   font-size: 36px;
 }
@@ -699,7 +699,8 @@ a.news-title:hover {
 .work-title {
   margin: 0 0 12px;
   font-family: var(--font-display);
-  font-weight: 500;
+  font-weight: 400;
+  letter-spacing: 0.02em;
   font-size: 22px;
 }
 

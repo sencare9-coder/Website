@@ -547,7 +547,6 @@ a.news-title:hover {
   gap: 32px;
 }
 
-.about-name,
 .statement-lead {
   font-size: 22px;
   line-height: 1.5;
@@ -556,6 +555,7 @@ a.news-title:hover {
   margin: 0;
 }
 
+.about-name,
 .statement {
   font-size: 14px;
   line-height: 1.8;

@@ -281,6 +281,10 @@ ul {
   left: 50%;
   transform: translateX(-50%);
   z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.3em;
@@ -288,6 +292,35 @@ ul {
   opacity: 0;
   pointer-events: none;
   animation: fade-in 1s ease 1.2s forwards;
+}
+
+.hero-scroll-line {
+  position: relative;
+  width: 1px;
+  height: 28px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.hero-scroll-line::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -100%;
+  width: 100%;
+  height: 100%;
+  background: var(--ink);
+  animation: hero-scroll-drop 1.8s ease-in-out infinite;
+}
+
+@keyframes hero-scroll-drop {
+  0% {
+    top: -100%;
+  }
+  60%,
+  100% {
+    top: 100%;
+  }
 }
 
 @keyframes fade-up {

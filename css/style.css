@@ -723,6 +723,12 @@ a.news-title:hover {
   color: var(--ink);
 }
 
+.work-credit {
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
 /* ---------- Music carousel ---------- */
 
 .music-heading {

@@ -1013,6 +1013,16 @@ a.news-title:hover {
   justify-content: center;
 }
 
+.social-list-icons a {
+  display: flex;
+  color: var(--muted);
+  transition: color 0.2s ease;
+}
+
+.social-list-icons a:hover {
+  color: var(--ink);
+}
+
 /* ---------- Footer ---------- */
 
 .site-footer {
